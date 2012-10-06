@@ -1,18 +1,9 @@
 """Setuptools setup file"""
 
 import sys
-import logging
 
 from setuptools import setup
 from setuptools.command.test import test as TestCommand
-
-# Ridiculous as it may seem, we need to import multiprocessing and logging here
-# in order to get tests to pass smoothly on python 2.7.
-try:
-    import multiprocessing
-    import logging
-except:
-    pass
 
 
 class Tox(TestCommand):
