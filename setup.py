@@ -1,10 +1,10 @@
 """Setuptools setup file"""
 
 import sys
-import os
 import logging
 
 from setuptools import setup
+from setuptools.command.test import test as TestCommand
 
 # Ridiculous as it may seem, we need to import multiprocessing and logging here
 # in order to get tests to pass smoothly on python 2.7.
@@ -14,6 +14,18 @@ try:
 except:
     pass
 
+
+class Tox(TestCommand):
+    def finalize_options(self):
+        TestCommand.finalize_options(self)
+        self.test_args = []
+        self.test_suite = True
+
+    def run_tests(self):
+        #import here, cause outside the eggs aren't loaded
+        import tox
+        errno = tox.cmdline(self.test_args)
+        sys.exit(errno)
 
 def get_description(fname='README.rst'):
     # Adapted from PEAK-Rules' setup.py
@@ -53,7 +65,7 @@ setup(
     description="Web widget creation toolkit based on TurboGears widgets",
     long_description = get_description(),
     install_requires=requires,
-    setup_requires=['nose'],
+    setup_requires=['nose', 'tox'],
     tests_require = [
         'nose',             # py3 - READY
         'coverage',         # py3 - READY
@@ -76,6 +88,7 @@ setup(
         'kajiki': _extra_kajiki,
         'chameleon': _extra_chameleon,
         },
+    cmdclass = {'tox': Tox},
     url = "http://toscawidgets.org/",
     download_url = "http://toscawidgets.org/download/",
     author='Paul Johnston, Christopher Perkins, Alberto Valverde & contributors',

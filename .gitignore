@@ -16,3 +16,4 @@ external
 htmlcov
 *.swp
 tags
+.tox/
